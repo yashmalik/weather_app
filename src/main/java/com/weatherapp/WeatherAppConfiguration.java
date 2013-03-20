@@ -1,9 +1,11 @@
 package com.weatherapp;
 
 import com.weatherapp.validators.ZipCodeValidator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 
 /**
  * Created with IntelliJ IDEA.

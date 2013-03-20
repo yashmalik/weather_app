@@ -1,6 +1,7 @@
 package com.weatherapp.services;
 
 import com.google.gson.Gson;
+import com.weatherapp.WeatherAppConfiguration;
 import com.weatherapp.models.Weather;
 import com.weatherapp.services.exceptions.WeatherServiceException;
 import org.apache.http.HttpResponse;
@@ -8,6 +9,9 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -28,17 +32,20 @@ import static java.lang.String.format;
  * To change this template use File | Settings | File Templates.
  */
 @Service
+@ImportResource("classpath:/properties-config.xml")
 public class WeatherServiceImpl implements WeatherService {
 
     public static final String CURRENT_OBSERVATION = "current_observation";
     public static final String DISPLAY_LOCATION = "display_location";
 
-    //@Value("#{apiProperties['api.key']}")
-    private String apiKey = "ed044d75b91fb500";
+    @Autowired
+    private WeatherAppConfiguration weatherAppConfiguration;
 
-    //@Value("#{apiProperties['url.format']}")
-    private String urlFormat = "http://api.wunderground.com/api/%s/conditions/q/%d.json";
+    @Value("#{apiProperties['api.key']}")
+    private String apiKey;
 
+    @Value("#{apiProperties['url.format']}")
+    private String urlFormat;
     @Override
     public void validateZip(int zip) {
 
