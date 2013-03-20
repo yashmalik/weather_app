@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="scripts.js"></script>
+    <title>Sample Weather App</title>
+</head>
+<body>
+<h1>Sample Weather App</h1>
+
+<div id="errorMessage" style="color: red; font-size: 18px; visibility: hidden">
+    Error(s):<br/>
+
+    <div id="errorString"></div>
+    <br/>
+</div>
+Enter the US (5 digit) zip code: <label for="zipCode"><input type="text" name="zipCode" id="zipCode"/></label>
+<input type="button" value="Submit" onclick="validate()" id="fetchButton"/>
+
+<div id="responseMessage" style="visibility: hidden">
+</div>
+</body>
+</html>
