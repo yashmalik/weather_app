@@ -2,6 +2,9 @@ package com.weatherapp.tests;
 
 import com.google.gson.Gson;
 import com.weatherapp.controllers.WeatherController;
+import com.weatherapp.models.Weather;
+import com.weatherapp.services.WeatherService;
+import com.weatherapp.services.exceptions.WeatherServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +23,7 @@ import java.util.Map;
 import static com.weatherapp.services.exceptions.ZipErrorMessages.*;
 import static com.weatherapp.utils.Constants.DATA_KEY;
 import static com.weatherapp.utils.Constants.ERROR_KEY;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 /**
@@ -32,12 +34,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  * To change this template use File | Settings | File Templates.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/WeatherControllerTest-context.xml"})
+@ContextConfiguration(locations = {"classpath:/WeatherUnitTest-context.xml"})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class})
-public class WeatherControllerTest {
+public class WeatherUnitTest {
 
     @Autowired
     private WeatherController weatherController;
+
+    @Autowired
+    private WeatherService weatherService;
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> fetch(String zipCode) {
@@ -101,5 +106,37 @@ public class WeatherControllerTest {
         assertEquals(data.get("city"), "Fremont");
         assertEquals(((Number) data.get("zip")).intValue(), 94538);
         assertTrue(((Number) data.get("temperatureFahrenheit")).doubleValue() > 0);
+    }
+
+    @Test
+    public void testWeatherServiceReturnsValidZip() {
+        try {
+            Weather w = weatherService.getWeatherData(94538);
+            assertEquals(w.getZip(), 94538);
+            assertEquals(w.getCity(), "Fremont");
+            assertEquals(w.getState(), "California");
+            assertTrue(w.getTemperatureFahrenheit() > 0);
+        } catch (WeatherServiceException e) {
+            throw new AssertionError("Test Failed");
+        }
+    }
+
+    @Test
+    public void testWeatherServiceFailsForInvalidZip() {
+        try {
+            weatherService.getWeatherData(-94538);
+            throw new AssertionError("Test Failed. Code should never reach here.");
+        } catch (WeatherServiceException e) {
+            assertNotNull(e);
+        }
+    }
+
+    @Test
+    public void testWeatherServiceReturnsZipNotFound() {
+        try {
+            weatherService.getWeatherData(0);
+        } catch (WeatherServiceException e) {
+            assertEquals(e.getMessage(), ZIP_NOT_FOUND);
+        }
     }
 }
